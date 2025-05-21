@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>GiftArtography</title>
+  <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+  <link rel="icon" href="../img/kaiadmin/favicon.ico" type="image/x-icon" />
+
+  <!-- Fonts and icons -->
+  <script src="../js/plugin/webfont/webfont.min.js"></script>
+  <script>
+    WebFont.load({
+      google: { families: ["Public Sans:300,400,500,600,700"] },
+      custom: {
+        families: [
+          "Font Awesome 5 Solid",
+          "Font Awesome 5 Regular",
+          "Font Awesome 5 Brands",
+          "simple-line-icons",
+        ],
+        urls: ["../css/fonts.min.css"],
+      },
+      active: function () {
+        sessionStorage.fonts = true;
+      },
+    });
+  </script>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../css/plugins.min.css" />
+  <link rel="stylesheet" href="../css/kaiadmin.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/demo.css" />
+</head>
+
+<body>
+  <div class="wrapper min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Registration</div>
+            </div>
+            <form id="registrationForm" enctype="multipart/form-data">
+              <div class="card-body">
+                <!-- Profile Image Upload -->
+                <div class="row justify-content-center mb-4">
+                  <div class="col-md-4 text-center">
+                    <div class="form-group">
+                      <div class="profile-pic-wrapper mx-auto">
+                        <div class="profile-pic d-flex align-items-center justify-content-center" id="profilePreview">
+                          <i class="fas fa-camera default-icon" id="defaultIcon"></i>
+                        </div>
+                        <div class="edit-icon" onclick="document.getElementById('profileInput').click();">
+                          <i class="fa fa-pencil-alt"></i>
+                        </div>
+                        <input type="file" accept="image/*" id="profileInput" class="hidden-file-input" onchange="loadProfileImage(event)">
+                      </div>
+                      <small class="form-text text-muted">Click pencil icon to upload profile</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="row justify-content-center">
+                  <div class="col-md-6 col-lg-6">
+                    <div class="form-group">
+                      <label for="username">Username</label>
+                      <input type="text" class="form-control" id="username" placeholder="Enter Username" />
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" class="form-control" id="password" placeholder="Enter Password" />
+                    </div>
+                    <div class="form-group">
+                      <label for="phone-no">Phone Number</label>
+                      <input type="tel" class="form-control" id="phone-no" placeholder="Enter Phone Number" pattern="[0-9]{10}" maxlength="10" required />
+                      <small class="text-danger d-none" id="phoneError">Phone number must be exactly 10 digits.</small>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-lg-6">
+                    <div class="form-group">
+                      <label for="email">Email Address</label>
+                      <input type="email" class="form-control" id="email" placeholder="Enter Email" required />
+                      <small class="text-danger d-none" id="emailError">Please enter a valid email address.</small>
+                    </div>
+                    <div class="form-group">
+                      <label for="confirm-password">Confirm Password</label>
+                      <input type="password" class="form-control" id="confirm-password" placeholder="Enter confirm Password" />
+                    </div>
+                    <div class="form-group">
+                      <label for="type">Type</label>
+                      <select class="form-select form-control" id="type">
+                        <option>Admin</option>
+                        <option>User</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-action text-center">
+                  <button class="btn btn-success w-100">Register</button>
+                  Existing User? <a href="login.html">Login</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core JS Files -->
+  <script src="../js/core/jquery-3.7.1.min.js"></script>
+  <script src="../js/core/popper.min.js"></script>
+  <script src="../js/core/bootstrap.min.js"></script>
+  <script src="../js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+  <script src="../js/plugin/chart.js/chart.min.js"></script>
+  <script src="../js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+  <script src="../js/plugin/chart-circle/circles.min.js"></script>
+  <script src="../js/plugin/datatables/datatables.min.js"></script>
+  <script src="../js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+  <script src="../js/plugin/jsvectormap/jsvectormap.min.js"></script>
+  <script src="../js/plugin/jsvectormap/world.js"></script>
+  <script src="../js/plugin/gmaps/gmaps.js"></script>
+  <script src="../js/plugin/sweetalert/sweetalert.min.js"></script>
+  <script src="../js/kaiadmin.min.js"></script>
+  <script src="../js/setting-demo2.js"></script>
+ 
+<script>
+  function loadProfileImage(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const profilePic = document.getElementById('profilePreview');
+      profilePic.style.backgroundImage = `url(${reader.result})`;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  }
+
+  document.getElementById("registrationForm").addEventListener("submit", function (e) {
+    const phoneInput = document.getElementById("phone-no");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirm-password");
+
+    const phoneError = document.getElementById("phoneError");
+    const emailError = document.getElementById("emailError");
+
+    let isValid = true;
+
+    // Phone validation: exactly 10 digits
+    const phoneValue = phoneInput.value.trim();
+    if (!/^\d{10}$/.test(phoneValue)) {
+      phoneError.classList.remove("d-none");
+      isValid = false;
+    } else {
+      phoneError.classList.add("d-none");
+    }
+
+    // Email validation
+    const emailValue = emailInput.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      emailError.classList.remove("d-none");
+      isValid = false;
+    } else {
+      emailError.classList.add("d-none");
+    }
+
+    // Password validation
+    const passwordValue = passwordInput.value.trim();
+    const confirmPasswordValue = confirmPasswordInput.value.trim();
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,15}$/;
+
+    // Show custom alerts if password is invalid
+    if (!passwordRegex.test(passwordValue)) {
+      alert("Password must be 8–15 characters");
+      isValid = false;
+    }
+
+    // Confirm password check
+    if (passwordValue !== confirmPasswordValue) {
+      alert("Password and Confirm Password must match.");
+      isValid = false;
+    }
+
+    if (!isValid) {
+      e.preventDefault(); 
+    }
+  });
+
+
+$(document).ready(function () {
+    $('#registrationForm').submit(function(event) {
+        event.preventDefault();
+
+        const jsonData = {
+            username: $('#username').val(),
+            email: $('#email').val(),
+            phone: $('#phone-no').val(),
+            password: $('#password').val(),
+            confirmPassword: $('#confirm-password').val(),
+            type: $('#type').val()
+        };
+
+        if (jsonData.password !== jsonData.confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('json', JSON.stringify(jsonData));
+
+        const file = $('#profileInput')[0].files[0];
+        if (file) {
+            formData.append("profile_image", file);
+        }
+
+        $.ajax({
+            url: 'save-admin-registration.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',  
+            success: function(response) {
+                if (response.success) {
+                    alert("Registered successfully!");
+                    $('#registrationForm')[0].reset();
+                } else {
+                    console.log(response);
+                    alert("Registration failed: " + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+                alert("Something went wrong.");
+            }
+        });
+    });
+});
+
+
+</script>
+
+<style>
+  .profile-pic-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+
+  .profile-pic {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    color: #888;
+  }
+
+  .default-icon {
+    font-size: 28px;
+    color: #888;
+  }
+
+  .edit-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 6px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+  }
+
+  .edit-icon i {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .hidden-file-input {
+    display: none;
+  }
+</style>
+</body>
+</html>
