@@ -31,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
  
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);    
 
-    // Save to database (example query, replace with your table/fields)
+    // Save to database
     $stmt = $conn->prepare("INSERT INTO admin_registration (name, email, phone, password, type, profile_image) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssisss", $username, $email, $phone, $hashedPassword, $type, $profileImage);
 
