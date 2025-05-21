@@ -17,6 +17,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $jsonData["password"];
     $type = $jsonData["type"];
 
+    //Check if email already exists
+    $checkEmailStmt = $conn->prepare("SELECT id FROM admin_registration WHERE email = ?");
+    $checkEmailStmt->bind_param("s", $email);
+    $checkEmailStmt->execute();
+    $checkEmailStmt->store_result();
+
+    if ($checkEmailStmt->num_rows > 0) {
+        echo json_encode(["success" => false, "error" => "Email already exists. Please enter a new email."]);
+        $checkEmailStmt->close();
+        $conn->close();
+        exit;
+    }
+    $checkEmailStmt->close();
+
     $profileImage = '';
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
         $uploadDir = "uploads/";
