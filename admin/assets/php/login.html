@@ -140,6 +140,7 @@
                 <input type="text" maxlength="1" class="form-control text-center otp-input" />
                 <input type="text" maxlength="1" class="form-control text-center otp-input" />
                 <input type="text" maxlength="1" class="form-control text-center otp-input" />
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
               </div>
               <div class="text-center mb-2">
                 <span id="otpTimer">01:00</span>
@@ -283,24 +284,66 @@
 
     // Resend OTP
     $('#resendOtpBtn').on('click', function () {
-      swal("New OTP Sent!", "A new OTP has been sent to your email.", "info");
-      startOtpTimer();
+      const email = $('#forgotEmail').val().trim(); // get same email again
+
+      if (!email) {
+        swal("Error", "Email missing. Please try again.", "error");
+        return;
+      }
+
+      $.ajax({
+        url: 'send-otp.php',
+        type: 'POST',
+        data: { email: email },
+        dataType: 'json',
+        success: function (response) {
+          if (response.status === 'success') {
+            swal("New OTP Sent!", "A new OTP has been sent to your email.", "info");
+            startOtpTimer(); // restart countdown
+          } else {
+            swal("Failed", response.message || "Could not resend OTP.", "error");
+          }
+        },
+        error: function (xhr, status, error) {
+          swal("Error", "Something went wrong: " + error, "error");
+        }
+      });
     });
+
 
     // Move to password reset step after successful OTP verification
     $('#verifyOtpBtn').on('click', function () {
+      const email = $('#forgotEmail').val(); // get the entered email again
       const enteredOtp = $('.otp-input').map(function () {
         return $(this).val();
       }).get().join('');
 
-      if (enteredOtp.length !== 5 || !/^\d{5}$/.test(enteredOtp)) {
-        swal("Error", "Please enter a valid 5-digit OTP.", "error");
-      } else {
-        swal("Verified!", "OTP is correct. Please reset your password.", "success");
-        $('#otpStep').hide();
-        $('#resetPasswordStep').show();
+      if (enteredOtp.length !== 6 || !/^\d{6}$/.test(enteredOtp)) {
+        swal("Error", "Please enter a valid 6-digit OTP.", "error");
+        return;
       }
+
+      // Send OTP to backend for verification
+      $.ajax({
+        url: 'verify-otp.php',
+        type: 'POST',
+        data: { email: email, otp: enteredOtp },
+        dataType: 'json',
+        success: function (response) {
+          if (response.status === 'success') {
+            swal("Verified!", "OTP is correct. Please reset your password.", "success");
+            $('#otpStep').hide();
+            $('#resetPasswordStep').show();
+          } else {
+            swal("Error", response.message || "Invalid OTP", "error");
+          }
+        },
+        error: function () {
+          swal("Error", "Server error during OTP verification.", "error");
+        }
+      });
     });
+
 
     // Real-time password validation
     $('#newPassword').on('input', function () {
@@ -322,8 +365,8 @@
       $('#confirmValidation').text(match ? '' : 'Passwords do not match');
     });
 
-    // Final password reset button
     $('#resetPasswordBtn').on('click', function () {
+      const email = $('#forgotEmail').val(); // get the same email
       const newPwd = $('#newPassword').val();
       const confirmPwd = $('#confirmPassword').val();
 
@@ -331,7 +374,7 @@
         /[a-z]/.test(newPwd) &&
         /[A-Z]/.test(newPwd) &&
         /[0-9]/.test(newPwd) &&
-        /[!@#$%^&*(),.?\":{}|<>]/.test(newPwd) &&
+        /[!@#$%^&*(),.?":{}|<>]/.test(newPwd) &&
         newPwd.length >= 8;
 
       if (!isValid) {
@@ -344,10 +387,30 @@
         return;
       }
 
-      // You can now send the new password to backend via AJAX
-      swal("Success", "Your password has been reset!", "success");
-      $('#forgotPasswordModal').modal('hide');
+      // Send new password to server
+      $.ajax({
+        url: 'reset-password.php',
+        type: 'POST',
+        data: {
+          email: email,
+          newPassword: newPwd
+        },
+        dataType: 'json',
+        success: function (response) {
+          if (response.status === 'success') {
+            swal("Success", "Your password has been reset!", "success");
+            $('#forgotPasswordModal').modal('hide');
+             $('#resetPasswordStep').hide();
+          } else {
+            swal("Error", response.message || "Something went wrong.", "error");
+          }
+        },
+        error: function () {
+          swal("Error", "Failed to reset password. Please try again.", "error");
+        }
+      });
     });
+
 
 
     // Focus next OTP box automatically
@@ -366,6 +429,9 @@
       $('.otp-input').val('');
       $('#otpStep').hide();
       $('#emailStep').show();
+      $('#resetPasswordStep').hide();
+      $('#newPassword').val('');
+      $('#confirmPassword').val('');
     });
   </script>
 </body>

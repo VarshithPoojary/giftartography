@@ -1,4 +1,11 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../../../PHPMailer/PHPMailer.php';
+require '../../../PHPMailer/SMTP.php';
+require '../../../PHPMailer/Exception.php';
+
 include 'connection.php';
 header('Content-Type: application/json');
 
@@ -17,24 +24,34 @@ $result = $stmt->get_result();
 if ($result->num_rows === 0) {
     echo json_encode(['status' => 'error', 'message' => 'Email not found.']);
     exit;
-} 
+}
 
-// Generate 6-digit OTP
+// Generate OTP
 $otp = rand(100000, 999999);
-
-// Update OTP in table
 $update = $conn->prepare("UPDATE admin_registration SET otp = ? WHERE email = ?");
 $update->bind_param("ss", $otp, $email);
 $update->execute();
 
-// Send email
-$subject = "Your OTP for Password Reset";
-$message = "Hello,\n\nYour OTP for password reset is: $otp\n\nPlease do not share this code.";
-$headers = "From: no-reply@yourdomain.com";
+// Send OTP via Gmail SMTP
+$mail = new PHPMailer(true);
 
-if (mail($email, $subject, $message, $headers)) {
+try {
+    $mail->isSMTP();
+    $mail->Host = 'smtp.gmail.com'; 
+    $mail->SMTPAuth = true;
+    $mail->Username = 'varshithpoojary16@gmail.com'; // your Gmail
+    $mail->Password = 'obyw xptq jrzh mzjq';   // app password
+    $mail->SMTPSecure = 'tls';
+    $mail->Port = 587;
+
+    $mail->setFrom('your-email@gmail.com', 'Giftartography');
+    $mail->addAddress($email);
+    $mail->Subject = 'Your OTP for Password Reset';
+    $mail->Body = "Hello,\n\nYour OTP for password reset is: $otp\n\nPlease do not share this code.";
+
+    $mail->send();
     echo json_encode(['status' => 'success']);
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP email.']);
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => 'Mailer Error: ' . $mail->ErrorInfo]);
 }
 ?>
