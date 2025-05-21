@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8">
+    <title>Giftartography</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <link rel="icon" href="../img/kaiadmin/favicon.ico" type="image/x-icon" />
+
+    <!-- Fonts and icons -->
+    <script src="../js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+            families: [
+            "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"
+            ],
+            urls: ["../css/fonts.min.css"]
+        },
+        active: function () {
+            sessionStorage.fonts = true;
+        }
+        });
+    </script>
+
+      <link rel="stylesheet" href="../css/bootstrap.min.css" />
+      <link rel="stylesheet" href="../css/plugins.min.css" />
+      <link rel="stylesheet" href="../css/kaiadmin.min.css" />
+
+    </head>
+<body>
+  <div class="wrapper min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">LOGIN</div>
+            </div>
+            <form id="sampleForm">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="email">Email Address</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="Enter Email"
+                      />
+                    </div>
+
+                    <div class="form-group position-relative">
+                      <label for="password">Password</label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Password"
+                      />
+                      <span
+                        toggle="#password"
+                        class="fa fa-fw fa-eye field-icon toggle-password"
+                        style="position: absolute; top: 52px; right: 20px; cursor: pointer;"
+                      ></span>
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                      <label for="successInput">Success Input</label>
+                      <input
+                        type="text"
+                        id="successInput"
+                        name="successInput"
+                        class="form-control is-valid"
+                        value="Success"
+                      />
+                    </div>
+                    <div class="form-group" style="display: none;">
+                      <label for="errorInput">Error Input</label>
+                      <input
+                        type="text"
+                        id="errorInput"
+                        name="errorInput"
+                        class="form-control is-invalid"
+                        value="Error"
+                      />
+                      <div class="invalid-feedback">
+                        Please provide valid information.
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-2">
+                      <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-action text-center">
+                <button type="submit" class="btn btn-success w-100">Login</button>
+                <!-- <button type="reset" class="btn btn-danger">Cancel</button> -->
+                <span>New User?<a href="registration.html"> Create an account</a></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="forgotPasswordForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="forgotPasswordLabel">Forgot Password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Step 1: Email input -->
+            <div id="emailStep">
+              <div class="form-group mb-3">
+                <label for="forgotEmail">Enter your registered email</label>
+                <input type="email" class="form-control" id="forgotEmail" name="forgotEmail" placeholder="example@email.com" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Send OTP</button>
+            </div>
+
+            <!-- Step 2: OTP Verification -->
+            <div id="otpStep" style="display: none;">
+              <p class="mb-2">Enter the OTP sent to your email</p>
+              <div class="d-flex justify-content-between gap-3 mb-3">
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
+                <input type="text" maxlength="1" class="form-control text-center otp-input" />
+              </div>
+              <div class="text-center mb-2">
+                <span id="otpTimer">01:00</span>
+              </div>
+              <button type="button" class="btn btn-success w-100 mb-2" id="verifyOtpBtn">Verify OTP</button>
+              <button type="button" class="btn btn-link w-100" id="resendOtpBtn" disabled>Resend OTP</button>
+            </div>
+
+            <!-- Step 3: Password Reset -->
+            <div id="resetPasswordStep" style="display: none;">
+              <div class="form-group mb-3">
+                <label for="newPassword">New Password</label>
+                <input type="password" class="form-control" id="newPassword" placeholder="Enter new password" />
+                <div id="passwordValidation" class="mt-1 text-danger small">
+                  <!-- Validation messages will be injected here -->
+                </div>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm password" />
+                <div id="confirmValidation" class="mt-1 text-danger small"></div>
+              </div>
+
+              <button type="button" class="btn btn-success w-100" id="resetPasswordBtn">Reset Password</button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core JS -->
+  <script src="../js/core/jquery-3.7.1.min.js"></script>
+  <script src="../js/core/popper.min.js"></script>
+  <script src="../js/core/bootstrap.min.js"></script>
+  <script src="../js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+  <script src="../js/kaiadmin.min.js"></script>
+
+  <!-- Optional: SweetAlert (for alerts) -->
+  <script src="../js/plugin/sweetalert/sweetalert.min.js"></script>
+
+  <!-- Form Handling (optional) -->
+  <script>
+    $(document).ready(function () {
+      $(".toggle-password").click(function () {
+        const input = $("#password");
+        const type = input.attr("type") === "password" ? "text" : "password";
+        input.attr("type", type);
+        $(this).toggleClass("fa-eye fa-eye-slash");
+      });
+    });
+
+    $('#sampleForm').on('submit', function (e) {
+      e.preventDefault();
+
+      const email = $('#email').val();
+      const password = $('#password').val();
+
+      $.ajax({
+          url: 'fetch-admin-login.php',
+          type: 'POST',
+          data: { email: email, password: password },
+          dataType: 'json',
+          success: function (response) {
+              if (response.status === 'success') {
+                  swal("Login Successful", "Welcome Back.", "success").then(() => {
+                      window.location.href = 'dashboard.php';
+                  });
+              } else {
+                  swal("Login Failed", response.message || "Invalid email or password", "error");
+              }
+          },
+          error: function (xhr, status, error) {
+              swal("Error", "Something went wrong: " + error, "error");
+          }
+      });
+    });
+
+
+
+
+    let otpTimerInterval;
+    let timeLeft = 60;
+
+    $('#forgotPasswordForm').on('submit', function (e) {
+      e.preventDefault();
+      const email = $('#forgotEmail').val().trim();
+
+      if (!email) {
+          swal("Error", "Please enter your registered email.", "error");
+          return;
+      } 
+
+      // Call backend to send OTP
+      $.ajax({
+          url: 'send-otp.php',
+          type: 'POST',
+          data: { email: email },
+          dataType: 'json',
+          success: function (response) {
+              if (response.status === 'success') {
+                  swal("OTP Sent!", "Check your email for the OTP.", "success");
+
+                  // Show OTP input step
+                  $('#emailStep').hide();
+                  $('#otpStep').show();
+
+                  startOtpTimer();
+              } else {
+                  swal("Failed", response.message || "Unable to send OTP.", "error");
+              }
+          },
+          error: function (xhr, status, error) {
+              swal("Error", "Something went wrong: " + error, "error");
+          }
+      });
+    });
+
+
+    // Start OTP countdown
+    function startOtpTimer() {
+      timeLeft = 60;
+      $('#otpTimer').text("01:00");
+      $('#resendOtpBtn').prop('disabled', true);
+
+      otpTimerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const seconds = String(timeLeft % 60).padStart(2, '0');
+        $('#otpTimer').text(`${minutes}:${seconds}`);
+
+        if (timeLeft <= 0) {
+          clearInterval(otpTimerInterval);
+          $('#otpTimer').text("00:00");
+          $('#resendOtpBtn').prop('disabled', false);
+        }
+      }, 1000);
+    }
+
+    // Resend OTP
+    $('#resendOtpBtn').on('click', function () {
+      swal("New OTP Sent!", "A new OTP has been sent to your email.", "info");
+      startOtpTimer();
+    });
+
+    // Move to password reset step after successful OTP verification
+    $('#verifyOtpBtn').on('click', function () {
+      const enteredOtp = $('.otp-input').map(function () {
+        return $(this).val();
+      }).get().join('');
+
+      if (enteredOtp.length !== 5 || !/^\d{5}$/.test(enteredOtp)) {
+        swal("Error", "Please enter a valid 5-digit OTP.", "error");
+      } else {
+        swal("Verified!", "OTP is correct. Please reset your password.", "success");
+        $('#otpStep').hide();
+        $('#resetPasswordStep').show();
+      }
+    });
+
+    // Real-time password validation
+    $('#newPassword').on('input', function () {
+      const pwd = $(this).val();
+      const validations = [];
+
+      if (!/[a-z]/.test(pwd)) validations.push("• Must contain a lowercase letter");
+      if (!/[A-Z]/.test(pwd)) validations.push("• Must contain an uppercase letter");
+      if (!/[0-9]/.test(pwd)) validations.push("• Must contain a number");
+      if (!/[!@#$%^&*(),.?\":{}|<>]/.test(pwd)) validations.push("• Must contain a special character");
+      if (pwd.length < 8) validations.push("• Minimum 8 characters required");
+
+      $('#passwordValidation').html(validations.length ? validations.join("<br>") : '');
+    });
+
+    // Check if confirm password matches
+    $('#confirmPassword').on('input', function () {
+      const match = $('#newPassword').val() === $(this).val();
+      $('#confirmValidation').text(match ? '' : 'Passwords do not match');
+    });
+
+    // Final password reset button
+    $('#resetPasswordBtn').on('click', function () {
+      const newPwd = $('#newPassword').val();
+      const confirmPwd = $('#confirmPassword').val();
+
+      const isValid =
+        /[a-z]/.test(newPwd) &&
+        /[A-Z]/.test(newPwd) &&
+        /[0-9]/.test(newPwd) &&
+        /[!@#$%^&*(),.?\":{}|<>]/.test(newPwd) &&
+        newPwd.length >= 8;
+
+      if (!isValid) {
+        swal("Error", "Password does not meet requirements.", "error");
+        return;
+      }
+
+      if (newPwd !== confirmPwd) {
+        swal("Error", "Passwords do not match.", "error");
+        return;
+      }
+
+      // You can now send the new password to backend via AJAX
+      swal("Success", "Your password has been reset!", "success");
+      $('#forgotPasswordModal').modal('hide');
+    });
+
+
+    // Focus next OTP box automatically
+    $('.otp-input').on('keyup', function (e) {
+      if (e.keyCode !== 8 && $(this).val()) {
+        $(this).next('.otp-input').focus();
+      } else if (e.keyCode === 8) {
+        $(this).prev('.otp-input').focus();
+      }
+    });
+
+    // Reset modal on close
+    $('#forgotPasswordModal').on('hidden.bs.modal', function () {
+      clearInterval(otpTimerInterval);
+      $('#forgotEmail').val('');
+      $('.otp-input').val('');
+      $('#otpStep').hide();
+      $('#emailStep').show();
+    });
+  </script>
+</body>
+</html>

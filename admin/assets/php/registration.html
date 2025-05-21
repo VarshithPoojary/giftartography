@@ -71,9 +71,10 @@
                       <label for="username">Username</label>
                       <input type="text" class="form-control" id="username" placeholder="Enter Username" />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="password">Password</label>
                       <input type="password" class="form-control" id="password" placeholder="Enter Password" />
+                      <i class="fa fa-fw fa-eye field-icon toggle-password" toggle="#password" style="position:absolute; top:50px; right:15px; cursor:pointer;"></i>
                     </div>
                     <div class="form-group">
                       <label for="phone-no">Phone Number</label>
@@ -87,9 +88,10 @@
                       <input type="email" class="form-control" id="email" placeholder="Enter Email" required />
                       <small class="text-danger d-none" id="emailError">Please enter a valid email address.</small>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                       <label for="confirm-password">Confirm Password</label>
                       <input type="password" class="form-control" id="confirm-password" placeholder="Enter confirm Password" />
+                      <i class="fa fa-fw fa-eye field-icon toggle-password" toggle="#confirm-password" style="position:absolute; top:50px; right:15px; cursor:pointer;"></i>
                     </div>
                     <div class="form-group">
                       <label for="type">Type</label>
@@ -130,7 +132,7 @@
   <script src="../js/kaiadmin.min.js"></script>
   <script src="../js/setting-demo2.js"></script>
  
-<script>
+<!-- <script>
   function loadProfileImage(event) {
     const reader = new FileReader();
     reader.onload = function () {
@@ -243,6 +245,117 @@ $(document).ready(function () {
 });
 
 
+</script> -->
+
+
+
+<script>
+function loadProfileImage(event) {
+  const reader = new FileReader();
+  reader.onload = function () {
+    const profilePic = document.getElementById('profilePreview');
+    profilePic.style.backgroundImage = `url(${reader.result})`;
+  };
+  reader.readAsDataURL(event.target.files[0]);
+}
+
+ $(document).on('click', '.toggle-password', function () {
+    const input = $($(this).attr("toggle"));
+    const type = input.attr("type") === "password" ? "text" : "password";
+    input.attr("type", type);
+    $(this).toggleClass("fa-eye fa-eye-slash");
+  });
+
+$(document).ready(function () {
+  $('#registrationForm').submit(function (event) {
+    event.preventDefault(); // prevent default form submission
+
+    const phoneInput = $('#phone-no');
+    const emailInput = $('#email');
+    const passwordInput = $('#password');
+    const confirmPasswordInput = $('#confirm-password');
+
+    const phoneError = $('#phoneError');
+    const emailError = $('#emailError');
+
+    let isValid = true;
+
+    // Phone validation
+    const phoneValue = phoneInput.val().trim();
+    if (!/^\d{10}$/.test(phoneValue)) {
+      phoneError.removeClass("d-none");
+      isValid = false;
+    } else {
+      phoneError.addClass("d-none");
+    }
+
+    // Email validation
+    const emailValue = emailInput.val().trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      emailError.removeClass("d-none");
+      isValid = false;
+    } else {
+      emailError.addClass("d-none");
+    }
+
+    // Password validation
+    const passwordValue = passwordInput.val().trim();
+    const confirmPasswordValue = confirmPasswordInput.val().trim();
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,15}$/;
+
+    if (!passwordRegex.test(passwordValue)) {
+      alert("Password must be 8–15 characters and include uppercase, lowercase, number, and special character.");
+      isValid = false;
+    }
+
+    if (passwordValue !== confirmPasswordValue) {
+      alert("Password and Confirm Password must match.");
+      isValid = false;
+    }
+
+    // Stop AJAX if validation fails
+    if (!isValid) return;
+
+    // Proceed with AJAX if all validations pass
+    const jsonData = {
+      username: $('#username').val(),
+      email: emailValue,
+      phone: phoneValue,
+      password: passwordValue,
+      confirmPassword: confirmPasswordValue,
+      type: $('#type').val()
+    };
+
+    const formData = new FormData();
+    formData.append('json', JSON.stringify(jsonData));
+
+    const file = $('#profileInput')[0].files[0];
+    if (file) {
+      formData.append("profile_image", file);
+    }
+
+    $.ajax({
+      url: 'save-admin-registration.php',
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      processData: false,
+      dataType: 'json',
+      success: function (response) {
+        if (response.success) {
+          swal("Registered successfully!", "Please Login!!", "success").then(() => {
+              window.location.href = 'login.html';
+          });
+        } else {
+          swal("Registration failed: " + response.message || "Invalid Details", "error");
+        }
+      },
+      error: function (xhr, status, error) {
+        swal("Error", "Something went wrong: " + error, "error");
+      }
+    });
+  });
+});
 </script>
 
 <style>
