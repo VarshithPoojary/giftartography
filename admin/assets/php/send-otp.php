@@ -17,7 +17,7 @@ $result = $stmt->get_result();
 if ($result->num_rows === 0) {
     echo json_encode(['status' => 'error', 'message' => 'Email not found.']);
     exit;
-}
+} 
 
 // Generate 6-digit OTP
 $otp = rand(100000, 999999);
