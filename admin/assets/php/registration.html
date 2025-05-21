@@ -347,7 +347,7 @@ $(document).ready(function () {
               window.location.href = 'login.html';
           });
         } else {
-          swal("Registration failed: " + response.message || "Invalid Details", "error");
+          swal("Registration failed: " ,  response.error, "error");
         }
       },
       error: function (xhr, status, error) {
