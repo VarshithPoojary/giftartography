@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $profileImage = $targetFile;
         }
     }
-
+ 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Save to database (example query, replace with your table/fields)
